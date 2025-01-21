@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>algorithm.png</file>
+    <file>camera.png</file>
+    <file>tms.png</file>
+  </qresource>
+</RCC>

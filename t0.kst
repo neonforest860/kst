@@ -1,0 +1,63 @@
+{
+    "nodes": [
+        {
+            "type": "Firn",
+            "pos": {
+                "x": 550,
+                "y": 150
+            },
+            "name": "Firn",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "Controller",
+            "pos": {
+                "x": 300,
+                "y": 250
+            },
+            "name": "Controller",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "Controller",
+            "pos": {
+                "x": 600,
+                "y": 350
+            },
+            "name": "Controller",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        }
+    ],
+    "connections": [
+        {
+            "start": {
+                "x": 550,
+                "y": 150
+            },
+            "end": {
+                "x": 300,
+                "y": 250
+            }
+        },
+        {
+            "start": {
+                "x": 550,
+                "y": 150
+            },
+            "end": {
+                "x": 600,
+                "y": 350
+            }
+        }
+    ],
+    "version": "1.0"
+}

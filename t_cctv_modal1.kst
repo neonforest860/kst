@@ -1,0 +1,64 @@
+{
+    "nodes": [
+        {
+            "type": "CCTV",
+            "pos": {
+                "x": 150,
+                "y": 250
+            },
+            "name": "CCTV",
+            "characteristics": {
+                "latitude": "h",
+                "longitude": "",
+                "name": "",
+                "ip": "",
+                "port": "",
+                "username": "",
+                "password": "",
+                "camera_id": "",
+                "street_id": ""
+            }
+        },
+        {
+            "type": "CCTV",
+            "pos": {
+                "x": 350,
+                "y": 400
+            },
+            "name": "CCTV",
+            "characteristics": {}
+        },
+        {
+            "type": "TPE",
+            "pos": {
+                "x": 400,
+                "y": 100
+            },
+            "name": "TPE",
+            "characteristics": {}
+        }
+    ],
+    "connections": [
+        {
+            "start": {
+                "x": 150,
+                "y": 250
+            },
+            "end": {
+                "x": 400,
+                "y": 100
+            }
+        },
+        {
+            "start": {
+                "x": 350,
+                "y": 400
+            },
+            "end": {
+                "x": 400,
+                "y": 100
+            }
+        }
+    ],
+    "version": "1.0"
+}

@@ -1,4 +1,3 @@
-# components/sidebar.py
 from PyQt6.QtWidgets import (
     QDockWidget, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox,
     QLineEdit, QHBoxLayout, QListWidget, QListWidgetItem
@@ -6,6 +5,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QSize, QMimeData, QPoint, QPropertyAnimation
 from PyQt6.QtGui import QIcon, QDrag, QPixmap
 from utils.styles import load_dark_theme, load_light_theme
+from PyQt6.QtWidgets import QGridLayout, QFileDialog, QApplication, QMessageBox
+
 import requests
 
 class CollapsibleSection(QWidget):
@@ -130,7 +131,6 @@ class NavigationButton(QPushButton):
         else:
             self.setStyleSheet(style % ("#f0f0f0", "black", "#e0e0e0"))
 
-# Continue with NavigationSidebar and DesignSidebar classes...
 
 class NavigationSidebar(QDockWidget):
     def __init__(self, main_window):
@@ -143,7 +143,7 @@ class NavigationSidebar(QDockWidget):
         self.setWidget(self.content)
         self.layout = QVBoxLayout(self.content)
         self.layout.setSpacing(0)
-        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setContentsMargins(5, 0, 20, 0)
         
         # Add toggle button
         self.toggle_button = QPushButton()
@@ -154,18 +154,60 @@ class NavigationSidebar(QDockWidget):
         # Add navigation buttons
         self.home_btn = NavigationButton("Konect Traffic Studio", "assets/icons/home.png")
         self.design_btn = NavigationButton("Design", "assets/icons/design.png")
+        self.control_btn = NavigationButton("Control", "assets/icons/control.png")
         self.settings_btn = NavigationButton("Settings", "assets/icons/settings.png")
         
         self.home_btn.clicked.connect(main_window.switch_to_home)
         self.design_btn.clicked.connect(main_window.switch_to_design)
+        self.control_btn.clicked.connect(main_window.switch_to_control)
         self.settings_btn.clicked.connect(main_window.switch_to_settings)
         
         self.layout.addWidget(self.home_btn)
         self.layout.addWidget(self.design_btn)
+        self.layout.addWidget(self.control_btn)
         self.layout.addWidget(self.settings_btn)
+
         
-        # Add stretch at the bottom
+        # Add stretch to push file buttons to bottom
         self.layout.addStretch()
+        
+        # Create container for file operation buttons
+        file_container = QWidget()
+        file_layout = QGridLayout(file_container)
+        file_layout.setSpacing(5)
+        file_layout.setContentsMargins(5, 5, 15, 5)
+        
+        # Create file operation buttons
+        self.save_btn = QPushButton("Save")
+        self.load_btn = QPushButton("Load")
+        self.image_btn = QPushButton("Image")
+        self.exit_btn = QPushButton("Exit")
+        
+        # Set icons for buttons
+        self.save_btn.setIcon(QIcon("assets/icons/save.png"))
+        self.load_btn.setIcon(QIcon("assets/icons/load.png"))
+        self.image_btn.setIcon(QIcon("assets/icons/image.png"))
+        self.exit_btn.setIcon(QIcon("assets/icons/exit.png"))
+        
+        # Add buttons to grid layout (2x2)
+        # file_layout.addWidget(self.save_btn, 0, 0)
+        # file_layout.addWidget(self.load_btn, 0, 1)
+        # file_layout.addWidget(self.image_btn, 1, 0)
+        # file_layout.addWidget(self.exit_btn, 1, 1)
+        
+        file_layout.addWidget(self.save_btn)
+        file_layout.addWidget(self.load_btn)
+        file_layout.addWidget(self.image_btn)
+        file_layout.addWidget(self.exit_btn)
+
+        # Connect button signals to main window methods
+        self.save_btn.clicked.connect(main_window.save_schema)
+        self.load_btn.clicked.connect(main_window.load_schema)
+        self.image_btn.clicked.connect(main_window.save_as_image)
+        self.exit_btn.clicked.connect(QApplication.instance().quit)
+        
+        # Add file container to main layout
+        self.layout.addWidget(file_container)
         
         # Set initial state
         self.expanded = True
@@ -183,10 +225,12 @@ class NavigationSidebar(QDockWidget):
         if self.expanded:
             self.home_btn.setText("")
             self.design_btn.setText("")
+            self.control_btn.setText("")
             self.settings_btn.setText("")
         else:
             self.home_btn.setText("Konect Traffic Studio")
             self.design_btn.setText("Design")
+            self.control_btn.setText("Control")
             self.settings_btn.setText("Settings")
         
         self.expanded = not self.expanded
@@ -211,32 +255,11 @@ class NavigationSidebar(QDockWidget):
             
         self.home_btn.setStyleSheet(style)
         self.design_btn.setStyleSheet(style)
+        self.control_btn.setStyleSheet(style)
         self.settings_btn.setStyleSheet(style)
         self.toggle_button.setStyleSheet(style)
 
 class DesignSidebar(QDockWidget):
-    # def __init__(self, canvas=None):
-    #     super().__init__()
-    #     self.canvas = canvas
-    #     self.setWindowTitle("Design Tools")
-    #     self.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetMovable)
-        
-    #     # Create main widget and layout
-    #     self.main_widget = QWidget()
-    #     self.setWidget(self.main_widget)
-    #     self.main_layout = QVBoxLayout(self.main_widget)
-    #     self.main_layout.setSpacing(0)
-    #     self.main_layout.setContentsMargins(0, 0, 0, 0)
-
-    #     # Add sections
-    #     self.setup_entity_section()
-    #     self.setup_tpe_section()
-    #     self.setup_algorithm_section()
-    #     self.setup_search_section()
-
-    #     # Set initial width
-    #     self.setFixedWidth(200)
-    # main.py
     def __init__(self, canvas=None):
         super().__init__()
         self.canvas = canvas
@@ -267,13 +290,57 @@ class DesignSidebar(QDockWidget):
         self.entity_section = CollapsibleSection("Entity")
         self.main_layout.addWidget(self.entity_section)
         
+        # Create a widget to hold the grid layout
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(10)
+        
         # Camera types
         camera_types = ["CCTV", "Redlight", "Firn", "TPE", "Controller"]
         self.camera_buttons = []
-        for cam_type in camera_types:
-            btn = DraggableButton(cam_type, f"assets/icons/{cam_type.lower()}.png")
+        
+        for i, cam_type in enumerate(camera_types):
+            row = i // 2  # Integer division to get row number
+            col = i % 2   # Modulo to get column number (0 or 1)
+            
+            # Create container widget for icon and label
+            container = QWidget()
+            container_layout = QVBoxLayout(container)
+            container_layout.setSpacing(5)
+            container_layout.setContentsMargins(5, 5, 5, 5)
+            container_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            
+            # Create button with icon
+            btn = DraggableButton("", f"assets/icons/{cam_type.lower()}.png")
+            btn.setFixedSize(50, 50)  # Set size to match grid size
+            btn.setIconSize(QSize(40, 40))  # Set icon size slightly smaller than button
+            btn.full_text = cam_type  # Store full text for drag and drop
             self.camera_buttons.append(btn)
-            self.entity_section.addWidget(btn)
+            
+            # Create label for text
+            label = QLabel(cam_type)
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            label.setStyleSheet("""
+                QLabel {
+                    color: white;
+                    font-size: 11px;
+                    margin-top: 5px;
+                }
+            """)
+            
+            # Add to container
+            container_layout.addWidget(btn)
+            container_layout.addWidget(label)
+            
+            # Add container to grid
+            grid_layout.addWidget(container, row, col, Qt.AlignmentFlag.AlignCenter)
+        
+        # Set column stretch to make columns equal width
+        grid_layout.setColumnStretch(0, 1)
+        grid_layout.setColumnStretch(1, 1)
+        
+        # Add the grid widget to the section
+        self.entity_section.addWidget(grid_widget)
 
     def setup_tpe_section(self):
         self.tpe_section = CollapsibleSection("TPE")
@@ -302,6 +369,9 @@ class DesignSidebar(QDockWidget):
         
         # Algorithm button
         self.algo_button = DraggableButton("BasiQ", "assets/icons/algorithm.png")
+        self.algo_section.addWidget(self.algo_button)
+
+        self.algo_button = DraggableButton("PyTraffic", "assets/icons/algorithm.png")
         self.algo_section.addWidget(self.algo_button)
 
         # Add stretch after sections
@@ -401,6 +471,83 @@ class DesignSidebar(QDockWidget):
             self.setStyleSheet(load_dark_theme())
         else:
             self.setStyleSheet(load_light_theme())
+    # def update_theme(self, dark_mode):
+    #     """Update the theme for the entire sidebar"""
+    #     self.dark_mode = dark_mode
+    #     if dark_mode:
+    #         self.setStyleSheet(load_dark_theme())
+    #     else:
+    #         self.setStyleSheet(load_light_theme())
+        
+    #     # Update icon labels
+    #     self.update_icon_labels_theme(dark_mode)
+        
+    #     # Update other theme-dependent elements
+    #     for button in self.camera_buttons:
+    #         button.update_theme(dark_mode)
+
+    def save_schema(self):
+        filename, _ = QFileDialog.getSaveFileName(
+            self, 
+            "Save Schema", 
+            "", 
+            "Konect Traffic Studio Files (*.kst)"
+        )
+        if filename:
+            if not filename.endswith('.kst'):
+                filename += '.kst'
+            self.main_window.canvas.save_schema(filename)
+
+    def load_schema(self):
+        filename, _ = QFileDialog.getOpenFileName(
+            self, 
+            "Load Schema", 
+            "", 
+            "Konect Traffic Studio Files (*.kst)"
+        )
+        if filename:
+            self.main_window.canvas.load_schema(filename)
+
+    def save_as_image(self):
+        filename, _ = QFileDialog.getSaveFileName(
+            self, 
+            "Save as Image", 
+            "", 
+            "PNG Files (*.png);;JPEG Files (*.jpg)"
+        )
+        if filename:
+            self.main_window.canvas.save_as_image(filename)
+
+    def toggle_sidebar(self):
+        width = 60 if self.expanded else 200
+        
+        self.animation = QPropertyAnimation(self, b"minimumWidth")
+        self.animation.setDuration(200)
+        self.animation.setStartValue(self.width())
+        self.animation.setEndValue(width)
+        self.animation.start()
+
+        # Update button texts
+        if self.expanded:
+            self.home_btn.setText("")
+            self.design_btn.setText("")
+            self.control_btn.setText("")
+            self.settings_btn.setText("")
+            self.save_btn.setText("")
+            self.load_btn.setText("")
+            self.image_btn.setText("")
+            self.exit_btn.setText("")
+        else:
+            self.home_btn.setText("Konect Traffic Studio")
+            self.design_btn.setText("Design")
+            self.control_btn.setText("Control")
+            self.settings_btn.setText("Settings")
+            self.save_btn.setText("Save")
+            self.load_btn.setText("Load")
+            self.image_btn.setText("Image")
+            self.exit_btn.setText("Exit")
+        
+        self.expanded = not self.expanded
     
     # def on_search_text_changed(self, text):
     #     if len(text) >= 3:  # Only search if at least 3 characters

@@ -1,0 +1,129 @@
+{
+    "nodes": [
+        {
+            "type": "Firn",
+            "pos": {
+                "x": 200,
+                "y": 250
+            },
+            "name": "Firn",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "TPE",
+            "pos": {
+                "x": 550,
+                "y": 300
+            },
+            "name": "TPE",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "Controller",
+            "pos": {
+                "x": 400,
+                "y": 500
+            },
+            "name": "Controller",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "BasiQ",
+            "pos": {
+                "x": 700,
+                "y": 500
+            },
+            "name": "BasiQ",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "CCTV",
+            "pos": {
+                "x": 400,
+                "y": 100
+            },
+            "name": "jjjj",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        },
+        {
+            "type": "Controller",
+            "pos": {
+                "x": 700,
+                "y": 350
+            },
+            "name": "Controller",
+            "size": {
+                "width": 50,
+                "height": 50
+            }
+        }
+    ],
+    "connections": [
+        {
+            "start": {
+                "x": 700,
+                "y": 500
+            },
+            "end": {
+                "x": 400,
+                "y": 500
+            }
+        },
+        {
+            "start": {
+                "x": 400,
+                "y": 500
+            },
+            "end": {
+                "x": 550,
+                "y": 300
+            }
+        },
+        {
+            "start": {
+                "x": 550,
+                "y": 300
+            },
+            "end": {
+                "x": 200,
+                "y": 250
+            }
+        },
+        {
+            "start": {
+                "x": 400,
+                "y": 100
+            },
+            "end": {
+                "x": 550,
+                "y": 300
+            }
+        },
+        {
+            "start": {
+                "x": 550,
+                "y": 300
+            },
+            "end": {
+                "x": 700,
+                "y": 350
+            }
+        }
+    ],
+    "version": "1.0"
+}

@@ -4,8 +4,10 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QLabel, Q
 from PyQt6.QtCore import Qt
 from components.sidebar import NavigationSidebar, DesignSidebar
 from components.canvas import Canvas
+from components.control_panel import ControlPanel
 from components.settings_panel import SettingsPanel
 from utils.styles import load_styles, load_dark_theme, load_light_theme
+from PyQt6.QtWidgets import QFileDialog
 
 class HomeView(QWidget):
     def __init__(self):
@@ -38,11 +40,13 @@ class KonectTrafficStudio(QMainWindow):
         # Create views
         self.home_view = HomeView()
         self.canvas = Canvas()
+        self.control_panel = ControlPanel()
         self.settings_panel = SettingsPanel(self)
         
         # Add views to stacked widget
         self.stacked_widget.addWidget(self.home_view)  # index 0
         self.stacked_widget.addWidget(self.canvas)     # index 1
+        self.stacked_widget.addWidget(self.control_panel)  # index 2
         self.stacked_widget.addWidget(self.settings_panel)  # index 2
         
         # Add main navigation sidebar
@@ -57,38 +61,6 @@ class KonectTrafficStudio(QMainWindow):
         # Create menu bar
         self.create_menu_bar()
         
-    # def create_menu_bar(self):        20jan-1
-    #     menubar = self.menuBar()
-        
-    #     # File menu
-    #     file_menu = menubar.addMenu("File")
-        
-    #     save_action = file_menu.addAction("Save")
-    #     save_action.setShortcut("Ctrl+S")
-    #     save_action.triggered.connect(self.canvas.save_schema)
-        
-    #     load_action = file_menu.addAction("Load")
-    #     load_action.setShortcut("Ctrl+O")
-    #     load_action.triggered.connect(self.canvas.load_schema)
-        
-    #     # Edit menu
-    #     edit_menu = menubar.addMenu("Edit")
-        
-    #     undo_action = edit_menu.addAction("Undo")
-    #     undo_action.setShortcut("Ctrl+Z")
-    #     undo_action.triggered.connect(self.canvas.undo)
-        
-    #     redo_action = edit_menu.addAction("Redo")
-    #     redo_action.setShortcut("Ctrl+Shift+Z")
-    #     redo_action.triggered.connect(self.canvas.redo)
-        
-    #     # View menu
-    #     view_menu = menubar.addMenu("View")
-        
-    #     toggle_grid_action = view_menu.addAction("Toggle Grid")
-    #     toggle_grid_action.setShortcut("Ctrl+G")
-    #     toggle_grid_action.triggered.connect(self.canvas.toggle_snap_to_grid)
-
     def switch_to_home(self):
         self.stacked_widget.setCurrentWidget(self.home_view)
         self.design_sidebar.hide()
@@ -96,6 +68,10 @@ class KonectTrafficStudio(QMainWindow):
     def switch_to_design(self):
         self.stacked_widget.setCurrentWidget(self.canvas)
         self.design_sidebar.show()
+    
+    def switch_to_control(self):
+        self.stacked_widget.setCurrentWidget(self.control_panel)
+        self.design_sidebar.hide() 
 
     def switch_to_settings(self):
         self.stacked_widget.setCurrentWidget(self.settings_panel)
@@ -149,38 +125,44 @@ class KonectTrafficStudio(QMainWindow):
         theme_action.triggered.connect(self.toggle_theme)
 
     def save_schema(self):
+        """Save the current schema to a file"""
         if self.stacked_widget.currentWidget() == self.canvas:
-            filename, _ = QFileDialog.getSaveFileName(self, "Save Schema", "", "JSON Files (*.json)")
+            filename, _ = QFileDialog.getSaveFileName(
+                self, 
+                "Save Schema", 
+                "", 
+                "Konect Traffic Studio Files (*.kst)"
+            )
             if filename:
+                if not filename.endswith('.kst'):
+                    filename += '.kst'
                 self.canvas.save_schema(filename)
 
     def load_schema(self):
+        """Load a schema from a file"""
         if self.stacked_widget.currentWidget() == self.canvas:
-            filename, _ = QFileDialog.getOpenFileName(self, "Load Schema", "", "JSON Files (*.json)")
+            filename, _ = QFileDialog.getOpenFileName(
+                self, 
+                "Load Schema", 
+                "", 
+                "Konect Traffic Studio Files (*.kst)"
+            )
             if filename:
+                self.switch_to_design()  # Switch to design view if not already there
                 self.canvas.load_schema(filename)
 
-    def switch_to_home(self):
-        self.stacked_widget.setCurrentWidget(self.home_view)
-        self.design_sidebar.hide()
+    def save_as_image(self):
+        """Save the current canvas as an image"""
+        if self.stacked_widget.currentWidget() == self.canvas:
+            filename, _ = QFileDialog.getSaveFileName(
+                self, 
+                "Save as Image", 
+                "", 
+                "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*.*)"
+            )
+            if filename:
+                self.canvas.save_as_image(filename)
 
-    def switch_to_design(self):
-        self.stacked_widget.setCurrentWidget(self.canvas)
-        self.design_sidebar.show()
-
-    def switch_to_settings(self):
-        self.stacked_widget.setCurrentWidget(self.settings_panel)
-        self.design_sidebar.hide()
-
-    def toggle_theme(self):
-        self.dark_mode = not self.dark_mode
-        if self.dark_mode:
-            self.setStyleSheet(load_dark_theme())
-        else:
-            self.setStyleSheet(load_light_theme())
-        self.nav_sidebar.update_theme(self.dark_mode)
-        self.design_sidebar.update_theme(self.dark_mode)
-        self.canvas.set_theme("dark" if self.dark_mode else "light")
 
 def main():
     app = QApplication(sys.argv)

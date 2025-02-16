@@ -1,0 +1,96 @@
+{
+    "nodes": [
+        {
+            "type": "TPE",
+            "pos": {
+                "x": 550,
+                "y": 200
+            },
+            "name": "TPE",
+            "characteristics": {
+                "ip": "5.201.184.192",
+                "port": "1080",
+                "username": "konect",
+                "password": "1234"
+            }
+        },
+        {
+            "type": "CCTV",
+            "pos": {
+                "x": 750,
+                "y": 350
+            },
+            "name": "Tandorost14",
+            "characteristics": {
+                "latitude": "35",
+                "longitude": "51",
+                "camera_id": "1",
+                "street_id": "9811862",
+                "name": "Tandorost14"
+            }
+        },
+        {
+            "type": "CCTV",
+            "pos": {
+                "x": 300,
+                "y": 450
+            },
+            "name": "Tandorost11",
+            "characteristics": {
+                "latitude": "35",
+                "longitude": "51",
+                "camera_id": "2",
+                "street_id": "6784778",
+                "name": "Tandorost11"
+            }
+        },
+        {
+            "type": "CCTV",
+            "pos": {
+                "x": 200,
+                "y": 150
+            },
+            "name": "Tandorost12",
+            "characteristics": {
+                "latitude": "35",
+                "longitude": "51",
+                "camera_id": "3",
+                "street_id": "",
+                "name": "Tandorost12"
+            }
+        }
+    ],
+    "connections": [
+        {
+            "start": {
+                "x": 550,
+                "y": 200
+            },
+            "end": {
+                "x": 750,
+                "y": 350
+            }
+        },
+        {
+            "start": {
+                "x": 550,
+                "y": 200
+            },
+            "end": {
+                "x": 300,
+                "y": 450
+            }
+        },
+        {
+            "start": {
+                "x": 550,
+                "y": 200
+            },
+            "end": {
+                "x": 200,
+                "y": 150
+            }
+        }
+    ],
+    "version": "1.0"
+}
